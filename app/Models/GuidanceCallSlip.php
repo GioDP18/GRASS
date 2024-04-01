@@ -18,6 +18,15 @@ class GuidanceCallSlip extends Model
         'teacher_in_charge',
     ];
 
-
     use HasFactory;
+
+    public function gcspk()
+    {
+        return $this->hasOne(GcsPK::class, 'gcs_id');
+    }
+
+    public function students()
+    {
+        return $this->hasOne(GcsPk::class, 'gcs_id', 'id');
+    }
 }

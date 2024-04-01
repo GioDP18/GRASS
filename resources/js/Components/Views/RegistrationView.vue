@@ -36,8 +36,6 @@
                                     <i class="fa fa-info-circle"></i> {{ errors.email }}
                                 </span>
                             </div>
-                        </div>
-                        <div v-show="currentStep === 2">
                             <div class="mb-3 form-input" :class="{ 'has-error': errors.sex }">
                                 <label for="sex" class="form-label">Sex</label>
                                 <select id="sex" class="form-select" v-model="formData.sex">
@@ -49,6 +47,8 @@
                                     <i class="fa fa-info-circle"></i> {{ errors.sex }}
                                 </span>
                             </div>
+                        </div>
+                        <div v-show="currentStep === 2">
                             <div class="mb-3 form-input" :class="{ 'has-error': errors.date_of_birth }">
                                 <label for="exampleInputEmail1" class="form-label">Date of Birth</label>
                                 <input type="date" class="form-control" v-model="formData.date_of_birth">
@@ -63,23 +63,22 @@
                                     <i class="fa fa-info-circle"></i> {{ errors.contact_number }}
                                 </span>
                             </div>
-                            <div class="mb-3 form-input" :class="{ 'has-error': errors.signature }">
-                                <label for="exampleInputPassword" class="form-label">Signature Image</label>
-                                <input type="file" class="form-control" @change="chooseSignature">
-                                <span class="error-message" v-if="errors.signature">
-                                    <i class="fa fa-info-circle"></i> {{ errors.signature }}
-                                </span>
-                            </div>
-                        </div>
-                        <div v-show="currentStep === 3">
                             <div class="mb-3 form-input" :class="{ 'has-error': errors.password }">
                                 <label for="exampleInputPassword" class="form-label">Password</label>
                                 <div class="password-input-wrapper">
                                     <input :type="showPassword ? 'text' : 'password'" class="form-control"
-                                        v-model="formData.password">
+                                        v-model="formData.password" @input="checkPasswordStrength">
                                     <i class="password-toggle-icon"
                                         :class="showPassword ? 'fa fa-eye-slash' : 'fa fa-eye'"
                                         @click="toggleShowPassword"></i>
+                                </div>
+                                <div class="password-strength-bar">
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar"
+                                            :style="{ width: passwordStrength + '%' }" :class="passwordStrengthColor">
+                                        </div>
+                                    </div>
+                                    <small class="password-strength-text">{{ passwordStrengthText }}</small>
                                 </div>
                                 <span class="error-message" v-if="errors.password">
                                     <i class="fa fa-info-circle"></i> {{ errors.password }}
@@ -98,6 +97,15 @@
                                     <i class="fa fa-info-circle"></i> {{ errors.password_confirmation }}
                                 </span>
                             </div>
+                        </div>
+                        <div v-show="currentStep === 3">
+                            <div class="mb-3 form-input" :class="{ 'has-error': errors.signature }">
+                                <label for="exampleInputPassword" class="form-label">Signature Image</label>
+                                <input type="file" class="form-control" @change="chooseSignature">
+                                <span class="error-message" v-if="errors.signature">
+                                    <i class="fa fa-info-circle"></i> {{ errors.signature }}
+                                </span>
+                            </div>
                             <div class="mb-3 form-input" :class="{ 'has-error': errors.role }">
                                 <label for="role" class="form-label">Role</label>
                                 <select id="role" class="form-select" v-model="formData.role">
@@ -113,7 +121,7 @@
                             </div>
                             <div v-if="formData.role === 'parent' || formData.role === 'student'"
                                 class="mb-3 form-input">
-                                <div :class="{ 'has-error': errors.id_number }">
+                                <div class="mb-3 form-input" :class="{ 'has-error': errors.id_number }">
                                     <label for="exampleInputEmail1" class="form-label">Student ID Number</label>
                                     <input type="text" class="form-control" placeholder="xx-xxxx-xxx"
                                         v-model="formData.id_number">
@@ -121,38 +129,43 @@
                                         <i class="fa fa-info-circle"></i> {{ errors.id_number }}
                                     </span>
                                 </div>
-                                <div :class="{ 'has-error': errors.id_number }" style="display:flex; margin-top:10px">
-                                    <div class="col-6">
-                                        <label for="exampleInputEmail1" class="form-label">Grade Level</label>
-                                        <select class="form-select" v-model="grade_level" name="" id="">
-                                            <option value="" selected disabled>Select..</option>
-                                            <option value="7">7</option>
-                                            <option value="8">8</option>
-                                            <option value="9">9</option>
-                                            <option value="10">10</option>
-                                            <option value="11">11</option>
-                                            <option value="12">12</option>
+                                <div class="form-select-container">
+                                    <div class="form-select-wrapper">
+                                        <label for="grade_level" class="form-label">Grade Level</label>
+                                        <select id="grade_level" class="form-select" v-model="formData.grade_level"
+                                            @change="updateSections">
+                                            <option value="" selected disabled>Select grade level</option>
+                                            <option value="7">Grade 7</option>
+                                            <option value="8">Grade 8</option>
+                                            <option value="9">Grade 9</option>
+                                            <option value="10">Grade 10</option>
+                                            <option value="11">Grade 11</option>
+                                            <option value="12">Grade 12</option>
                                         </select>
-                                        <span class="error-message" v-if="errors.id_number">
-                                            <i class="fa fa-info-circle"></i> {{ errors.id_number }}
-                                        </span>
                                     </div>
-                                    <div class="col-6">
-                                        <label for="exampleInputEmail1" class="form-label">Section</label>
-                                        <select class="form-select" v-model="section" name="" id="">
-                                            <option value="" selected disabled>Select..</option>
-                                            <option value="aaa">aaa</option>
-                                            <option value="bbb">bbb</option>
-                                            <option value="ccc">ccc</option>
-                                            <option value="ddd">ddd</option>
-                                            <option value="eee">eee</option>
-                                            <option value="fff">fff</option>
+                                    <div class="form-select-wrapper">
+                                        <label for="section" class="form-label">Section</label>
+                                        <select id="section" class="form-select" v-model="formData.section">
+                                            <option value="" selected disabled>Select section</option>
+                                            <option v-for="section in gradeSections[formData.grade_level]"
+                                                :value="section" :key="section">{{ section }}</option>
                                         </select>
-                                        <span class="error-message" v-if="errors.id_number">
-                                            <i class="fa fa-info-circle"></i> {{ errors.id_number }}
-                                        </span>
                                     </div>
                                 </div>
+                                <span class="error-message" v-if="errors.id_number">
+                                    <i class="fa fa-info-circle"></i> {{ errors.id_number }}
+                                </span>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="termsCheckbox"
+                                    v-model="formData.acceptTerms">
+                                <label class="form-check-label" for="termsCheckbox">
+                                    I accept the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">terms
+                                        and conditions</a>
+                                </label>
+                                <span class="error-message" v-if="errors.acceptTerms">
+                                    <i class="fa fa-info-circle"></i> {{ errors.acceptTerms }}
+                                </span>
                             </div>
                         </div>
                         <div class="form-buttons mt-1">
@@ -163,6 +176,74 @@
                             <button v-else type="submit" class="btn btn-primary">Submit</button>
                         </div>
                     </form>
+                </div>
+            </div>
+
+            <!-- Bootstrap modal for terms and conditions -->
+            <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header" style="background-color: #2087E4; color: white;">
+                            <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+
+                        <div class="modal-body">
+                            <p>This privacy policy will help you understand how GRASS uses and protects the data you
+                                will provide.</p>
+                            <p>We reserve the right to change and update this policy at any given time, of which you
+                                will be promptly updated. If you want to make sure that you are up to date with the
+                                latest changes, we advise you to visit this page frequently.</p>
+
+                            <h5><strong>What User Data We Collect:</strong></h5>
+                            <p>When you visit the website, we may ask you to provide us with certain personally
+                                identifiable information that can be used to contact or identify you. Personally
+                                Identifiable Information may include, but is not limited to:</p>
+                            <ul>
+                                <li>Email address</li>
+                                <li>First name and Last name</li>
+                                <li>Phone number</li>
+                            </ul>
+
+                            <h5><strong>Why We Collect Your Data:</strong></h5>
+                            <p>We are collecting your data for several reasons:</p>
+                            <ul>
+                                <li>To provide and maintain our services</li>
+                                <li>To improve our services</li>
+                                <li>To communicate with you and respond to inquiries and requests</li>
+                            </ul>
+
+                            <h5><strong>Data Sharing and Disclosure:</strong></h5>
+                            <p>Personal data collected within this service will be utilized by the PSHS-EVC Guidance and
+                                Counseling Unit (GCU) for their student profiling and counseling services. However, no
+                                personal information will be sold, rented, or leased to other third parties without your
+                                explicit consent.</p>
+
+                            <h5><strong>Data Security:</strong></h5>
+                            <p>We take appropriate measures to safeguard your personal data against unauthorized access,
+                                alteration, disclosure, or destruction. However, no method of transmission over the
+                                Internet or electronic storage is 100% secure, and we cannot guarantee absolute
+                                security.</p>
+
+                            <h5><strong>User Controls and Rights:</strong></h5>
+                            <p>You have the right to access, correct, or delete your personal data held by us. You may
+                                also opt-out of certain data processing activities, although this may affect your
+                                ability to access certain features or services.</p>
+
+                            <h5><strong>Retention of Data:</strong></h5>
+                            <p>We will retain your personal data only for as long as necessary to fulfill the purposes
+                                outlined in these terms.</p>
+
+                            <p>If you have any questions, concerns, or requests regarding these terms or our data
+                                practices, please contact the developers at <a
+                                    href="mailto:gcu.grass@gmail.com">gcu.grass@gmail.com</a>.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" style="background-color: #FF4141; border: none;"
+                                class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="register-right">
@@ -185,7 +266,7 @@
 
 <script setup>
 import axios from 'axios';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import store from "../../State/index.js";
 
@@ -206,6 +287,7 @@ const formData = ref({
     id_number: '',
     grade_level: '',
     section: '',
+    acceptTerms: false,
 });
 
 const errors = ref({
@@ -227,6 +309,51 @@ const currentStep = ref(1);
 const totalSteps = 3;
 
 const showPassword = ref(false);
+
+const checkPasswordStrength = () => {
+    const password = formData.value.password;
+    let strength = 0;
+
+    if (password.length >= 8) strength += 1;
+    if (password.match(/[a-z]/)) strength += 1;
+    if (password.match(/[A-Z]/)) strength += 1;
+    if (password.match(/[0-9]/)) strength += 1;
+    if (password.match(/[$&+,:;=?@#|'<>.^*()%!-]/)) strength += 1;
+
+    passwordStrength.value = (strength / 5) * 100;
+    setPasswordStrengthText();
+};
+
+const setPasswordStrengthText = () => {
+    if (passwordStrength.value < 20) {
+        passwordStrengthText.value = "Weak";
+        passwordStrengthColor.value = "bg-danger";
+    } else if (passwordStrength.value < 60) {
+        passwordStrengthText.value = "Medium";
+        passwordStrengthColor.value = "bg-warning";
+    } else {
+        passwordStrengthText.value = "Strong";
+        passwordStrengthColor.value = "bg-success";
+    }
+};
+
+const passwordStrength = ref(0);
+const passwordStrengthText = ref("");
+const passwordStrengthColor = ref("");
+
+onMounted(() => {
+    checkPasswordStrength();
+});
+
+// Define sections for each grade level
+const gradeSections = {
+    '7': ['Diamond', 'Emerald', 'Ruby'],
+    '8': ['Sampaguita', 'Jasmine', 'Camia'],
+    '9': ['Sodium', 'Rubidium', 'Potassium'],
+    '10': ['Proton', 'Electron', 'Neutron'],
+    '11': ['A', 'B', 'C'],
+    '12': ['A', 'B', 'C']
+};
 
 const validateForm = () => {
     errors.value = {};
@@ -278,7 +405,20 @@ const validateForm = () => {
     } else if (formData.value.password_confirmation !== formData.value.password) {
         errors.value.password_confirmation = "Passwords don't match.";
     }
+
+    if (!formData.value.acceptTerms) {
+        errors.value.acceptTerms = 'You must accept the terms and conditions';
+    }
 };
+
+const updateSections = () => {
+    const selectedGrade = formData.value.grade_level;
+    formData.value.section = '';
+    if (selectedGrade && gradeSections[selectedGrade]) {
+        formData.value.section = gradeSections[selectedGrade][0];
+    }
+};
+
 const chooseSignature = (event) => {
     const file = event.target.files[0];
     formData.value.signature = file;
@@ -307,16 +447,16 @@ const submitForm = async () => {
                 password: formData.value.password,
                 password_confirmation: formData.value.password_confirmation,
             },
-                {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                })
-                .then((response) => {
-                    if (response.status === 200) {
-                        router.push({ name: 'login' })
-                    }
-                })
+            {
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                }
+            })
+            .then((response) => {
+                if (response.status === 200) {
+                    router.push({ name: 'ConfirmEmail' });
+                }
+            })
         }
         catch (error) {
             console.log(error);
@@ -353,6 +493,54 @@ const prevStep = () => {
 </script>
 
 <style scoped>
+.password-strength-bar {
+    margin-top: 5px;
+    position: relative;
+}
+
+.progress {
+    height: 5px;
+}
+
+.progress-bar {
+    border-radius: 5px;
+}
+
+.password-strength-text {
+    position: absolute;
+    bottom: -15px;
+    right: 0;
+    font-size: 10px;
+    color: #6c757d;
+}
+
+.bg-danger {
+    background-color: #dc3545;
+}
+
+.bg-warning {
+    background-color: #ffc107;
+}
+
+.bg-success {
+    background-color: #28a745;
+}
+
+.form-select-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 100%;
+}
+
+.form-select-wrapper {
+    width: calc(50% - 10px);
+}
+
+.form-select {
+    width: 100%;
+}
+
 .register-container {
     background-image: url('../../../../public/external/Background.png');
     background-size: cover;
@@ -435,7 +623,9 @@ const prevStep = () => {
 .form-input select {
     border-radius: 20px;
     font-style: italic;
+    /* padding: 0 30px 0 25px; */
     padding-left: 25px;
+    padding-right: 40px;
     background-color: #f0f0f0;
 }
 

@@ -10,9 +10,9 @@
                         <button class="assign" data-bs-toggle="modal" data-bs-target="#assign"><i
                                 style="margin-right: 5px;"><font-awesome-icon
                                     :icon="['fas', 'user-plus']" /></i>Assign</button>
-                        <RouterLink class="create" to="requestIntakeInterview"><i
+                        <button class="create" @click="goToRequests"><i
                                 style="margin-right: 5px;"><font-awesome-icon :icon="['fas', 'bell']" /></i>Requests
-                        </RouterLink>
+                        </button>
                     </div>
                 </div>
                 <table id="table-intake" class="table table-striped table-hover" width="100%">
@@ -39,7 +39,7 @@
                                     </button>
                                     <ul class="dropdown-menu" aria-labelledby="sendUserCertDropdown">
                                         <li><a class="dropdown-item view" href="#"
-                                                @click="sendCertificate('certificate1')"><i><font-awesome-icon
+                                                @click="viewForm"><i><font-awesome-icon
                                                         :icon="['fas', 'eye']"
                                                         style="margin-right: 10px;" /></i>View</a></li>
                                         <li><a class="dropdown-item generate" href="#"
@@ -244,7 +244,7 @@ const initializeDataTable = () => {
 
 const selectGrade = (grade) => {
     selectedGrade.value = grade;
-    selectedSection.value = null; // Reset selected section when grade changes
+    selectedSection.value = null;
 };
 
 const selectSection = (section) => {
@@ -279,6 +279,10 @@ const getAllIntakeInterviewForms = async () => {
     catch (error) {
         console.log(error);
     }
+}
+
+const viewForm = (file_name) => {
+    window.open(`${import.meta.env.VITE_BASE_URL}/intake_interview/${file_name}.pdf`, '_blank');
 }
 
 const generateForm = async (form_id) => {
@@ -382,6 +386,10 @@ const assignByBatch = async () => {
 
 const goToInputs = () => {
     router.push({ name: 'staff-fieldIntakeInterview' })
+}
+
+const goToRequests = () => {
+    router.push({ name: 'staff-requestIntakeInterview' })
 }
 
 </script>

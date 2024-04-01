@@ -25,6 +25,7 @@ import FieldReferralForm from "../Components/Pages/Staff/FillForm/FieldReferralF
 import FieldGuidanceAdmission from "../Components/Pages/Staff/FillForm/FieldGuidanceAdmissionSlip.vue";
 import FieldClientMonitoringForm from "../Components/Pages/Staff/FillForm/FieldClientMonitoringForm.vue";
 import FieldParentQuestionnaire from "../Components/Pages/Staff/FillForm/FieldParentQuestionnaire.vue";
+import FieldCumulativeRecord from "../Components/Pages/Staff/FillForm/FieldCumulativeRecord.vue";
 //Requests
 import RequestIntakeInterview from "../Components/Pages/Staff/Requests/RequestIntakeInterview.vue";
 import RequestGuidanceAdmission from "../Components/Pages/Staff/Requests/RequestGuidanceAdmission.vue";
@@ -44,6 +45,9 @@ import StudentCummulativeRecord from "../Components/Pages/Student/Forms/StudentC
 import StudentClientMonitoring from "../Components/Pages/Student/Forms/StudentClientMonitoring.vue";
 //Fields
 import FillClientMonitoring from "../Components/Pages/Student/FillForm/FillClientMonitoringForm.vue";
+//Assignments
+import AssignmentCumulative from "../Components/Pages/Student/Assignments/StudentAssignmentCummulativeRecord.vue";
+import AssignmentClientMonitoring from "../Components/Pages/Student/Assignments/StudentAssignmentClientMonitoring.vue";
 
 //---------------------------------Parents and Teachers---------------------------------
 import ParentsTeacherView from "../Components/Views/ParentsTeacherView.vue";
@@ -55,7 +59,14 @@ import ParentsTeacherParentQuestionnaire from "../Components/Pages/ParentsTeache
 import ParentsTeacherReferralForm from "../Components/Pages/ParentsTeacher/Forms/ParentsTeacherReferralForm.vue";
 //Fields
 import FillReferral from "../Components/Pages/ParentsTeacher/FillForm/FillReferralForm.vue";
+//Assignments
+// import AssignmentParentQuestionnaire from "../Components/Pages/ParentsTeacher/Assignments/PTAssignmentParentQuestionnaire.vue";
+import AssignmentReferralForm from "../Components/Pages/ParentsTeacher/Assignments/PTAssignmentReferral.vue";
 
+import ConfirmEmail from "../Components/Views/ConfirmEmail.vue";
+import VerifiedEmail from "../Components/Views/VerifiedEmail.vue";
+import VerifyEmail from "../Components/Views/VerifyEmail.vue";
+import NotVerifiedEmail from "../Components/Views/NotVerifiedEmail.vue";
 import NotFound from "../Components/404.vue";
 
 const routes = [
@@ -73,6 +84,11 @@ const routes = [
         path: "/about",
         component: AboutPage,
         name: "about",
+    },
+    {
+        path: "/verify-email",
+        component: VerifyEmail,
+        name: "verify-email",
     },
     {
         path: "/staff",
@@ -161,6 +177,11 @@ const routes = [
                 component: FieldParentQuestionnaire,
                 name: "staff-fieldParentQuestionnaire",
             },
+            {
+                path: "fieldCumulativeRecord",
+                component: FieldCumulativeRecord,
+                name: "staff-fieldCumulativeRecord",
+            },
             //REQUESTS
             {
                 path: "requestIntakeInterview",
@@ -231,10 +252,26 @@ const routes = [
                 name: "student-ClientMonitoring",
             },
             //FIELDS
+            // {
+            //     path: "fillCumulativeRecord",
+            //     component: FillCumulativeRecord,
+            //     name: "student-fillCumulativeRecord",
+            // },
             {
                 path: "fillClientMonitoring",
                 component: FillClientMonitoring,
                 name: "student-fillClientMonitoring",
+            },
+            // ASSIGNMENTS
+            {
+                path: "assignmentCumulative",
+                component: AssignmentCumulative,
+                name: "student-assignmentCumulative",
+            },
+            {
+                path: "assignmentClientMonitoring",
+                component: AssignmentClientMonitoring,
+                name: "student-assignmentClientMonitoring",
             },
         ],
     },
@@ -275,7 +312,28 @@ const routes = [
                 component: FillReferral,
                 name: "parentsTeacher-fillReferral",
             },
+            //ASSIGNMENTS
+            {
+                path: "assReferral",
+                component: AssignmentReferralForm,
+                name: "parentsTeacher-assReferral",
+            },
         ],
+    },
+    {
+        path: "/confirmEmail",
+        component: ConfirmEmail,
+        name: "ConfirmEmail",
+    },
+    {
+        path: "/verifiedEmail",
+        component: VerifiedEmail,
+        name: "verifiedEmail",
+    },
+    {
+        path: "/notVerifiedEmail",
+        component: NotVerifiedEmail,
+        name: "notVerifiedEmail",
     },
     {
         path: "/:path(.*)",

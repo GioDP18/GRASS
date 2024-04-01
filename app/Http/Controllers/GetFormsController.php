@@ -18,4 +18,33 @@ class GetFormsController extends Controller
     public function getAllGuidanceAdmissionSlips(){
         return $this->getFormsService->getAllGuidanceAdmissionSlips();
     }
+
+    public function getAllGuidanceCallSlips(){
+        return $this->getFormsService->getAllGuidanceCallSlips();
+    }
+
+    public function getAllParentQuestionnaireForms(){
+        return $this->getFormsService->getAllParentQuestionnaireForms();
+    }
+
+    public function getAllReferralForms(){
+        return $this->getFormsService->getAllReferralForms();
+    }
+
+    public function getAllCumulativeRecordForms(){
+        return $this->getFormsService->getAllCumulativeRecordForms();
+    }
+
+    public function getAllClientMonitoringForms(){
+        return $this->getFormsService->getAllClientMonitoringForms();
+    }
+
+
+    public function getMyReferralForms($id){
+        return $this->getFormsService->getMyReferralForms($id);
+    }
+
+    public function getMyClientMonitoringForms($id){
+        return $this->getFormsService->getMyClientMonitoringForms($id);
+    }
 }
