@@ -11,7 +11,11 @@ Class EventServiceImpl implements EventService
 {
     public function getEvents(){
         try{
-            $data = Event::all();
+            Event::whereDate('event_date', '<', now())->update([
+                'isDone' => true
+            ]);
+
+            $data = Event::where('isDone', false)->get();
 
             if(!$data){
                 return response()->json([

@@ -14,7 +14,7 @@ Class EmailVerificationServiceImpl implements EmailVerificationService
 {
     public function __construct()
     {
-        
+
     }
 
     public function sendVerificationLink(object $user): void
@@ -46,7 +46,7 @@ Class EmailVerificationServiceImpl implements EmailVerificationService
                 'success' => true,
                 'message' => 'email already verified'
             ])->send() && exit;
-        } 
+        }
     }
 
     public function verifyEmail($email, $token)
@@ -72,7 +72,7 @@ Class EmailVerificationServiceImpl implements EmailVerificationService
                 'message' => 'Email verification failed, please try again later',
             ]);
         }
-        
+
     }
 
     public function verifyToken($email, $token)
@@ -93,9 +93,9 @@ Class EmailVerificationServiceImpl implements EmailVerificationService
                 'successful' => false,
                 'message' => 'Invalid verification token',
             ])->send() && exit;
-        }   
+        }
     }
-    
+
     public function generateVerificationLink(string $email): string
     {
         $checkIfTokenExists = EmailVerificationToken::where('email', $email)->first();
@@ -111,5 +111,5 @@ Class EmailVerificationServiceImpl implements EmailVerificationService
             return $url;
         }
     }
-   
+
 }

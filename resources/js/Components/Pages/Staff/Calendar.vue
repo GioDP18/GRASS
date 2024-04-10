@@ -23,7 +23,6 @@
                                     :checked="availableTimeSlots.includes(timeSlot)" @change="handleChange(timeSlot)">
                                 <label :for="timeSlot" class="m-1">{{ timeSlot }}</label>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -35,7 +34,7 @@
         <div class="details">
             <div class="d-flex flex-column gap-3">
                 <div style="width:100%; padding:10px; border-radius:20px; border:2px solid #fbebeb; max-height: 295px; overflow-y: auto;">
-                    <p style="font-weight:bold; color:gray; font-size:15px; opacity:60%">Appoinments for today</p>
+                    <p style="font-weight:bold; color:gray; font-size:15px; opacity:60%">Appointments for today</p>
                     <div class="ml-4" style="overflow-x: auto;">
                         <div class="appointment d-flex" v-for="item in appointments_today" :key="item.id">
                             <p style="font-weight:bold; color:#27516B"><i class="fa-regular fa-clock"
@@ -50,7 +49,7 @@
                     <p style="font-weight:bold; color:gray; font-size:15px; opacity:60%">Available time for today</p>
                     <div class="ml-4">
                         <p style="font-weight:bold; color:#27516B" v-for="item in available_time_today" :key="item.id">
-                            <i class="fa-regular fa-clock" style="color:#ED9696"></i> {{ item }}
+                            <p v-if="splitter(item)"><i class="fa-regular fa-clock" style="color:#ED9696"></i> {{ item }}</p>
                         </p>
                     </div>
                 </div>
@@ -68,19 +67,18 @@
 
         </div>
     </div>
-
 </template>
 
 <script setup>
 import axios from 'axios';
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted } from 'vue';
 
-const value = ref(new Date())
-const modalVisible = ref(false)
-const selectedDate = ref(null)
-const selectedTimeSlots = ref([])
-const user_id_reserved = ref([])
-const availableTimeSlots = reactive([])
+const value = ref(new Date());
+const modalVisible = ref(false);
+const selectedDate = ref(null);
+const selectedTimeSlots = ref([]);
+const user_id_reserved = ref([]);
+const availableTimeSlots = reactive([]);
 const fixedTimeSlots = [
     '7:30 AM - 8:00 AM',
     '8:00 AM - 8:30 AM',
@@ -100,31 +98,67 @@ const fixedTimeSlots = [
     '3:00 PM - 3:30 PM',
     '3:30 PM - 4:00 PM',
     '4:00 PM - 4:30 PM',
-]
+];
 const available_time = ref([]);
 const available_time_today = ref([]);
-const appointments_today = ref([])
+const appointments_today = ref([]);
 
 onMounted(() => {
     getTimeNotAvailableToday();
     getAppointmentsToday();
-})
+});
+
+const updateTime = () => {
+    const date = new Date();
+    const hours = date.getHours();
+    const minutes = date.getMinutes();
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const formattedHours = hours % 12 || 12;
+    const formattedMinutes = minutes < 10 ? '0' + minutes : minutes;
+    return `${formattedHours}:${formattedMinutes} ${period}`;
+};
+
+const splitter = (p) => {
+    const check = p.split('-');
+    const startTime = check[0].trim();
+    return compareTime(startTime, updateTime());
+};
+
+const compareTime = (time1, time2) => {
+    const [hours1, minutes1] = time1.split(' ')[0].split(':').map(Number);
+    const period1 = time1.split(' ')[1];
+    let hours2 = Number(time2.split(':')[0]);
+    const minutes2 = Number(time2.split(':')[1].split(' ')[0]);
+    const period2 = time2.split(' ')[1];
+
+    // Adjust hours for PM
+    if (period2 === 'PM' && hours2 !== 12) {
+        hours2 += 12;
+    }
+
+    // Compare hours and minutes
+    if (hours1 > hours2) {
+        return true;
+    } else if (hours1 === hours2 && minutes1 > minutes2) {
+        return true;
+    } else {
+        return false;
+    }
+};
 
 const handleDateClick = async (data) => {
-    selectedTimeSlots.value = []
-    user_id_reserved.value = []
+    selectedTimeSlots.value = [];
+    user_id_reserved.value = [];
     try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/get-schedule/${data.day}`)
-        console.log(response.data);
-        selectedDate.value = data.day
-        modalVisible.value = true
-        availableTimeSlots.splice(0, availableTimeSlots.length, ...response.data.schedule.map(schedule => schedule.time))
-        selectedTimeSlots.value = availableTimeSlots
-        console.log(selectedTimeSlots.value)
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/get-schedule/${data.day}`);
+        selectedDate.value = data.day;
+        modalVisible.value = true;
+        availableTimeSlots.splice(0, availableTimeSlots.length, ...response.data.schedule.map(schedule => schedule.time));
+        selectedTimeSlots.value = availableTimeSlots;
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const updateSchedule = async () => {
     try {
@@ -132,10 +166,9 @@ const updateSchedule = async () => {
             time: selectedTimeSlots.value,
             date: selectedDate.value,
             user_id: user_id_reserved.value,
-        })
-        console.log(response.data);
-        modalVisible.value = false
-        available_time_today.value = []
+        });
+        modalVisible.value = false;
+        available_time_today.value = [];
         getTimeNotAvailableToday();
         if (response) {
             swal({
@@ -144,11 +177,10 @@ const updateSchedule = async () => {
                 button: "Okay",
             });
         }
-
     } catch (error) {
         console.error(error);
     }
-}
+};
 
 const handleChange = (time) => {
     const checkbox = document.getElementById(time);
@@ -157,37 +189,29 @@ const handleChange = (time) => {
     } else {
         selectedTimeSlots.value = selectedTimeSlots.value.filter(slot => slot !== time);
     }
-}
+};
 
 const getTimeNotAvailableToday = async () => {
     try {
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/get-not-available-time-today`)
-        // Extract times from the API response
+        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/get-not-available-time-today`);
         const notAvailableTimes = response.data.schedule.map(slot => slot.time);
-
-        // Filter out not available times from fixedTimeSlots
         available_time_today.value = fixedTimeSlots.filter(slot => !notAvailableTimes.includes(slot));
-
-        console.log(response.data)
-        // not_available_time_today.value = response.data.schedule
-    }
-    catch (error) {
+    } catch (error) {
         console.error(error);
     }
-}
+};
 
 const getAppointmentsToday = async () => {
     try {
-        const result = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/get-appointments-today`)
-        console.log(result.data)
-        appointments_today.value = result.data.appointments
-    }
-    catch (error) {
+        const result = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/v1/get-appointments-today`);
+        appointments_today.value = result.data.appointments;
+    } catch (error) {
         console.error(error);
     }
-}
+};
 
 </script>
+
 
 <style scoped>
 .is-selected {

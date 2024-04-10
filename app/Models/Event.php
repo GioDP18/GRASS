@@ -11,6 +11,7 @@ class Event extends Model
         'event_name',
         'event_date',
         'event_time',
+        'isDone',
     ];
 
     use HasFactory;

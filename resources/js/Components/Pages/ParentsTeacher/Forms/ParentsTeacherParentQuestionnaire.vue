@@ -113,18 +113,10 @@ const goToFill = () => {
                                             <span class="send-text">Action</span>
                                         </button>
                                         <ul class="dropdown-menu" aria-labelledby="sendUserCertDropdown">
-                                            <li><a class="dropdown-item view" href="#"
-                                                    @click="sendCertificate('certificate1')"><i><font-awesome-icon
-                                                            :icon="['fas', 'eye']"
-                                                            style="margin-right: 10px;" /></i>View</a></li>
                                             <li><a class="dropdown-item generate" href="#"
                                                     @click="sendCertificate('certificate2')"><i><font-awesome-icon
                                                             :icon="['fas', 'file']"
                                                             style="margin-right: 10px;" /></i>Generate</a></li>
-                                            <li><a class="dropdown-item delete" href="#"
-                                                    @click="sendCertificate('certificate2')"><i><font-awesome-icon
-                                                            :icon="['fas', 'trash']"
-                                                            style="margin-right: 10px;" /></i>Delete</a></li>
                                         </ul>
                                     </div>
                                 </td>
